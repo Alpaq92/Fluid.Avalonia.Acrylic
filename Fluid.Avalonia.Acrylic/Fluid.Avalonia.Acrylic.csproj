@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- NuGet package -->
+    <PackageId>Fluid.Avalonia.Acrylic</PackageId>
+    <Description>Cross-platform, software-rendered acrylic / frosted-glass backdrop for AvaloniaUI — a SkiaSharp SKRuntimeEffect shader pipeline (vibrancy, blur, rounded-rect lens, tint, highlight). Renders entirely via Avalonia's Skia backend, so it works on Windows, macOS, Linux and the browser with no OS backdrop support required. Companion to Fluid.Avalonia; a renamed fork of the MIT-licensed LiquidGlassAvaloniaUI by KaranocaVe.</Description>
+    <Authors>Alpaq92</Authors>
+    <PackageProjectUrl>https://github.com/Alpaq92/Fluid.Avalonia.Acrylic</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Alpaq92/Fluid.Avalonia.Acrylic.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>avalonia;acrylic;glass;blur;backdrop;skiasharp;fluent;mica;vibrancy</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="SkiaSharp" Version="3.119.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Shaders\AcrylicShader.sksl" />
+    <AvaloniaResource Include="Assets\Shaders\AcrylicShader.sksl" />
+    <None Remove="Assets\Shaders\AcrylicHighlight.sksl" />
+    <AvaloniaResource Include="Assets\Shaders\AcrylicHighlight.sksl" />
+    <None Remove="Assets\Shaders\AcrylicInteractiveHighlight.sksl" />
+    <AvaloniaResource Include="Assets\Shaders\AcrylicInteractiveHighlight.sksl" />
+    <None Remove="Assets\Shaders\AcrylicGamma.sksl" />
+    <AvaloniaResource Include="Assets\Shaders\AcrylicGamma.sksl" />
+    <None Remove="Assets\Shaders\AcrylicProgressiveMask.sksl" />
+    <AvaloniaResource Include="Assets\Shaders\AcrylicProgressiveMask.sksl" />
+    <None Remove="Assets\Shaders\AcrylicBackdropTransform.sksl" />
+    <AvaloniaResource Include="Assets\Shaders\AcrylicBackdropTransform.sksl" />
+  </ItemGroup>
+
+</Project>
