@@ -7,7 +7,7 @@
 A cross-platform, software-rendered **acrylic / frosted-glass backdrop** for [AvaloniaUI](https://avaloniaui.net).
 
 [![NuGet](https://img.shields.io/nuget/v/Fluid.Avalonia.Acrylic.svg)](https://www.nuget.org/packages/Fluid.Avalonia.Acrylic)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/blob/main/LICENSE)
 
 </div>
 
@@ -49,8 +49,8 @@ AppBuilder.Configure<App>()
 
 ## Credits
 
-This is a renamed, repackaged fork of **[LiquidGlassAvaloniaUI](https://github.com/KaranocaVe/LiquidGlassAvaloniaUI)** by **KaranocaVe** (MIT) — the name was changed to "Acrylic" as a more platform-neutral term. All rendering credit belongs to the upstream project; see [LICENSE](LICENSE) for the preserved copyright.
+This is a renamed, repackaged fork of **[LiquidGlassAvaloniaUI](https://github.com/KaranocaVe/LiquidGlassAvaloniaUI)** by **KaranocaVe** (MIT) — the name was changed to "Acrylic" as a more platform-neutral term. All rendering credit belongs to the upstream project; see [LICENSE](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/blob/main/LICENSE) for the preserved copyright.
 
 ## License
 
-[MIT](LICENSE) — © 2025 KaranocaVe (original), © 2026 Alpaq92 (fork).
+[MIT](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/blob/main/LICENSE) — © 2025 KaranocaVe (original), © 2026 Alpaq92 (fork).
