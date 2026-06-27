@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/Alpaq92/Fluid.Avalonia.Acrylic/main/icon.png" width="128" height="128" alt="Fluid.Avalonia.Acrylic icon" />
+
 # Fluid.Avalonia.Acrylic
 
 A cross-platform, software-rendered **acrylic / frosted-glass backdrop** for [AvaloniaUI](https://avaloniaui.net).
