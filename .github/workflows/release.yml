@@ -4,9 +4,8 @@ name: Release
 # BREAKING CHANGE) and maintains a "Release PR" that bumps the version in
 # .release-please-manifest.json and updates CHANGELOG.md. The PR is queued for
 # auto-merge, so it lands on its own once CI + CodeQL are green. Merging it
-# creates the tag + GitHub Release; the publish job then packs Fluid.Avalonia at
-# the new tag and pushes it to NuGet.org. (The WebAssembly demo deploys to
-# GitHub Pages separately via pages.yml on every push to main.)
+# creates the tag + GitHub Release; the publish job then packs
+# Fluid.Avalonia.Acrylic at the new tag and pushes it to NuGet.org.
 #
 # Releases created by GITHUB_TOKEN don't trigger other workflows, so publish is
 # wired here via `needs:` rather than `on: release`.
