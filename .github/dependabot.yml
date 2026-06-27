@@ -17,6 +17,12 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # SkiaSharp must track the major Avalonia.Skia is built against (3.x for
+    # Avalonia 12). A 4.x bump compiles (deprecated APIs) but is not runtime-
+    # compatible, so a passing CI build wouldn't catch it — never propose a major.
+    ignore:
+      - dependency-name: "SkiaSharp"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"

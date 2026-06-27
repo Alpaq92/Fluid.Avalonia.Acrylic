@@ -20,7 +20,10 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="SkiaSharp" Version="4.148.0" />
+    <!-- Must match the SkiaSharp major Avalonia.Skia is built against (3.x for
+         Avalonia 12). 4.x compiles (APIs are only deprecated) but is not
+         runtime-compatible with Avalonia.Skia. Dependabot ignores 4.x majors. -->
+    <PackageReference Include="SkiaSharp" Version="3.119.4" />
   </ItemGroup>
 
   <ItemGroup>
