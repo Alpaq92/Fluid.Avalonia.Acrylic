@@ -1,0 +1,156 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:acrylic="using:Fluid.Avalonia.Acrylic"
+        x:Class="AcrylicDemo.MainWindow"
+        Title="Fluid.Avalonia.Acrylic — Demo"
+        Icon="/icon.png"
+        Width="1180" Height="760"
+        MinWidth="900" MinHeight="600"
+        Background="#0E0E12">
+
+  <TabControl x:Name="Tabs" Padding="0" Margin="0">
+
+    <!-- ===================== GALLERY ===================== -->
+    <TabItem Header="Gallery">
+      <Panel>
+        <Panel>
+          <Panel.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#FF512F" Offset="0"/>
+              <GradientStop Color="#DD2476" Offset="0.5"/>
+              <GradientStop Color="#1FA2FF" Offset="1"/>
+            </LinearGradientBrush>
+          </Panel.Background>
+          <Ellipse Width="240" Height="240" Fill="#8CFFD200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,40,0,0"/>
+          <Ellipse Width="320" Height="320" Fill="#80FF8A00" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,80,40"/>
+          <Ellipse Width="200" Height="200" Fill="#7C7CFF6B" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-40,0,0"/>
+        </Panel>
+        <StackPanel Orientation="Horizontal" Spacing="28" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <acrylic:AcrylicSurface Width="300" Height="340" CornerRadius="28" BlurRadius="16" Vibrancy="1.4" Brightness="0.06" TintColor="#5B8DEF" HighlightEnabled="True" ShadowEnabled="True">
+            <StackPanel Margin="28" VerticalAlignment="Center">
+              <TextBlock Text="Cross-platform" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+              <TextBlock Text="Windows, macOS, Linux &amp; WASM — identical output." FontSize="14" Foreground="#ECFFFFFF" Margin="0,10,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+          </acrylic:AcrylicSurface>
+          <acrylic:AcrylicSurface Width="300" Height="340" CornerRadius="28" BlurRadius="16" Vibrancy="1.4" Brightness="0.06" TintColor="#BE4BDB" HighlightEnabled="True" ShadowEnabled="True">
+            <StackPanel Margin="28" VerticalAlignment="Center">
+              <TextBlock Text="No OS backdrop" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+              <TextBlock Text="No Mica, vibrancy or KWin blur required." FontSize="14" Foreground="#ECFFFFFF" Margin="0,10,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+          </acrylic:AcrylicSurface>
+          <acrylic:AcrylicSurface Width="300" Height="340" CornerRadius="28" BlurRadius="16" Vibrancy="1.4" Brightness="0.06" TintColor="#20C997" HighlightEnabled="True" ShadowEnabled="True">
+            <StackPanel Margin="28" VerticalAlignment="Center">
+              <TextBlock Text="Pure SkiaSharp" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+              <TextBlock Text="One SKRuntimeEffect shader, GPU or CPU." FontSize="14" Foreground="#ECFFFFFF" Margin="0,10,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+          </acrylic:AcrylicSurface>
+        </StackPanel>
+      </Panel>
+    </TabItem>
+
+    <!-- ===================== PLAYGROUND ===================== -->
+    <TabItem Header="Playground">
+      <Grid ColumnDefinitions="*,320">
+        <Panel Grid.Column="0">
+          <Panel>
+            <Panel.Background>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#8E2DE2" Offset="0"/>
+                <GradientStop Color="#4A00E0" Offset="0.55"/>
+                <GradientStop Color="#00B4DB" Offset="1"/>
+              </LinearGradientBrush>
+            </Panel.Background>
+            <Ellipse Width="280" Height="280" Fill="#80FF4FD8" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="40,0,0,30"/>
+            <Ellipse Width="300" Height="300" Fill="#80FFC44F" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,40,0"/>
+          </Panel>
+          <acrylic:AcrylicSurface x:Name="PlayCard" Width="440" Height="300" CornerRadius="28" BlurRadius="14" Vibrancy="1.4" Brightness="0.06" TintColor="#5B8DEF" HighlightEnabled="True" ShadowEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Margin="32" VerticalAlignment="Center">
+              <TextBlock Text="Playground" FontSize="26" FontWeight="SemiBold" Foreground="White"/>
+              <TextBlock Text="Tune the glass with the controls on the right, then screenshot." FontSize="14" Foreground="#ECFFFFFF" Margin="0,10,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+          </acrylic:AcrylicSurface>
+        </Panel>
+        <Border Grid.Column="1" Background="#15151B" Padding="22">
+          <StackPanel Spacing="4">
+            <TextBlock Text="Blur radius" Foreground="#B0B0BA" Margin="0,0,0,2"/>
+            <Slider x:Name="BlurSlider" Minimum="0" Maximum="40" Value="14"/>
+            <TextBlock Text="Vibrancy" Foreground="#B0B0BA" Margin="0,8,0,2"/>
+            <Slider x:Name="VibSlider" Minimum="0" Maximum="3" Value="1.4"/>
+            <TextBlock Text="Brightness" Foreground="#B0B0BA" Margin="0,8,0,2"/>
+            <Slider x:Name="BrightSlider" Minimum="-0.3" Maximum="0.3" Value="0.06"/>
+            <CheckBox x:Name="HighlightCheck" Content="Edge highlight" IsChecked="True" Margin="0,8,0,0"/>
+            <CheckBox x:Name="ShadowCheck" Content="Drop shadow" IsChecked="True"/>
+            <TextBlock Text="Tint" Foreground="#B0B0BA" Margin="0,12,0,6"/>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Button Click="OnSwatch" Tag="#5B8DEF" Background="#5B8DEF" Width="32" Height="32" CornerRadius="7"/>
+              <Button Click="OnSwatch" Tag="#BE4BDB" Background="#BE4BDB" Width="32" Height="32" CornerRadius="7"/>
+              <Button Click="OnSwatch" Tag="#20C997" Background="#20C997" Width="32" Height="32" CornerRadius="7"/>
+              <Button Click="OnSwatch" Tag="#FF6B6B" Background="#FF6B6B" Width="32" Height="32" CornerRadius="7"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </TabItem>
+
+    <!-- ===================== INTERACTIVE ===================== -->
+    <TabItem Header="Interactive">
+      <Panel>
+        <Panel>
+          <Panel.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#0F2027" Offset="0"/>
+              <GradientStop Color="#203A43" Offset="0.5"/>
+              <GradientStop Color="#2C5364" Offset="1"/>
+            </LinearGradientBrush>
+          </Panel.Background>
+          <Ellipse Width="260" Height="260" Fill="#8C36D1DC" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="120,80,0,0"/>
+          <Ellipse Width="320" Height="320" Fill="#805B86E5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,80,40"/>
+        </Panel>
+        <acrylic:AcrylicInteractiveSurface Width="460" Height="300" CornerRadius="32" BlurRadius="18" Vibrancy="1.4" Brightness="0.06" TintColor="#36D1DC" HighlightEnabled="True" ShadowEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <StackPanel Margin="32" VerticalAlignment="Center">
+            <TextBlock Text="Press &amp; drag me" FontSize="26" FontWeight="SemiBold" Foreground="White"/>
+            <TextBlock Text="AcrylicInteractiveSurface adds press / drag deformation and an interactive highlight." FontSize="14" Foreground="#ECFFFFFF" Margin="0,10,0,0" TextWrapping="Wrap"/>
+          </StackPanel>
+        </acrylic:AcrylicInteractiveSurface>
+      </Panel>
+    </TabItem>
+
+    <!-- ===================== IN AN APP ===================== -->
+    <TabItem Header="In an app">
+      <Panel>
+        <Panel>
+          <Panel.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#2B5876" Offset="0"/>
+              <GradientStop Color="#4E4376" Offset="1"/>
+            </LinearGradientBrush>
+          </Panel.Background>
+          <Ellipse Width="300" Height="300" Fill="#6CFF6BD6" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="60,0,0,40"/>
+          <Ellipse Width="260" Height="260" Fill="#6C6BD6FF" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,60,80,0"/>
+        </Panel>
+        <Grid Margin="40" ColumnDefinitions="220,*">
+          <acrylic:AcrylicSurface Grid.Column="0" Margin="0,0,20,0" CornerRadius="24" BlurRadius="20" Vibrancy="1.3" Brightness="0.05" TintColor="#5B8DEF" HighlightEnabled="True" ShadowEnabled="True">
+            <StackPanel Margin="22" Spacing="14">
+              <TextBlock Text="Acrylic" FontSize="20" FontWeight="SemiBold" Foreground="White"/>
+              <TextBlock Text="Home" Foreground="#F0FFFFFF"/>
+              <TextBlock Text="Gallery" Foreground="#B8FFFFFF"/>
+              <TextBlock Text="Settings" Foreground="#B8FFFFFF"/>
+              <TextBlock Text="About" Foreground="#B8FFFFFF"/>
+            </StackPanel>
+          </acrylic:AcrylicSurface>
+          <acrylic:AcrylicSurface Grid.Column="1" CornerRadius="24" BlurRadius="20" Vibrancy="1.3" Brightness="0.05" TintColor="#BE4BDB" HighlightEnabled="True" ShadowEnabled="True">
+            <StackPanel Margin="32" Spacing="12" VerticalAlignment="Center">
+              <TextBlock Text="Frosted panels in a real layout" FontSize="24" FontWeight="SemiBold" Foreground="White"/>
+              <TextBlock Text="Drop AcrylicSurface anywhere you'd use a Border or Card — it frosts whatever sits behind it." FontSize="15" Foreground="#ECFFFFFF" TextWrapping="Wrap"/>
+              <Border Background="#33FFFFFF" Height="1" Margin="0,6"/>
+              <TextBlock Text="• Blur, vibrancy, tint, refraction" Foreground="#E0FFFFFF"/>
+              <TextBlock Text="• Edge highlight &amp; drop shadow" Foreground="#E0FFFFFF"/>
+              <TextBlock Text="• Works on desktop and in the browser" Foreground="#E0FFFFFF"/>
+            </StackPanel>
+          </acrylic:AcrylicSurface>
+        </Grid>
+      </Panel>
+    </TabItem>
+
+  </TabControl>
+</Window>

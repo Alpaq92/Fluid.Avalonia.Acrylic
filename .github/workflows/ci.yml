@@ -33,3 +33,6 @@ jobs:
 
       - name: Build (library)
         run: dotnet build Fluid.Avalonia.Acrylic/Fluid.Avalonia.Acrylic.csproj --configuration Release --no-restore
+
+      - name: Build (demo)
+        run: dotnet build Fluid.Avalonia.Acrylic.Demo/Fluid.Avalonia.Acrylic.Demo.csproj --configuration Release
