@@ -50,6 +50,12 @@ namespace Fluid.Avalonia.Acrylic
         {
             RenderTransformOrigin = RelativePoint.Center;
 
+            // Paint a transparent background so the whole surface is hit-testable.
+            // Without it, pointer presses on the empty glass pass straight through
+            // and the press/drag deformation never fires. (A consumer can still
+            // override Background; a local value set here only supplies the default.)
+            Background = Brushes.Transparent;
+
             _animationTimer = new DispatcherTimer(DispatcherPriority.Render)
             {
                 Interval = TimeSpan.FromMilliseconds(16)
