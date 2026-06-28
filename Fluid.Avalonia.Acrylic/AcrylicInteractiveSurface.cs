@@ -4,6 +4,7 @@ using global::Avalonia.Controls;
 using global::Avalonia.Input;
 using global::Avalonia.Interactivity;
 using global::Avalonia.Media;
+using global::Avalonia.Rendering;
 using global::Avalonia.Threading;
 
 namespace Fluid.Avalonia.Acrylic
@@ -12,7 +13,7 @@ namespace Fluid.Avalonia.Acrylic
     /// An interactive variant of <see cref="AcrylicSurface"/> that adds press/drag deformation and
     /// an interactive highlight overlay.
     /// </summary>
-    public class AcrylicInteractiveSurface : AcrylicSurface
+    public class AcrylicInteractiveSurface : AcrylicSurface, ICustomHitTest
     {
         public static readonly StyledProperty<bool> IsInteractiveProperty =
             AvaloniaProperty.Register<AcrylicInteractiveSurface, bool>(nameof(IsInteractive), true);
@@ -49,12 +50,6 @@ namespace Fluid.Avalonia.Acrylic
         public AcrylicInteractiveSurface()
         {
             RenderTransformOrigin = RelativePoint.Center;
-
-            // Paint a transparent background so the whole surface is hit-testable.
-            // Without it, pointer presses on the empty glass pass straight through
-            // and the press/drag deformation never fires. (A consumer can still
-            // override Background; a local value set here only supplies the default.)
-            Background = Brushes.Transparent;
 
             _animationTimer = new DispatcherTimer(DispatcherPriority.Render)
             {
@@ -102,6 +97,12 @@ namespace Fluid.Avalonia.Acrylic
             get => GetValue(InteractiveMaxScaleDipProperty);
             set => SetValue(InteractiveMaxScaleDipProperty, value);
         }
+
+        // The glass is drawn via a custom render with no Background, so the control is
+        // otherwise invisible to hit-testing (Background="Transparent" doesn't help a
+        // custom-rendered control). Claim the whole bounds so press/drag is received
+        // anywhere on the surface when interactive.
+        public bool HitTest(Point point) => IsInteractive && new Rect(Bounds.Size).Contains(point);
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
