@@ -106,12 +106,14 @@
           <Ellipse Width="260" Height="260" Fill="#8C36D1DC" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="120,80,0,0"/>
           <Ellipse Width="320" Height="320" Fill="#805B86E5" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,80,40"/>
         </Panel>
-        <acrylic:AcrylicInteractiveSurface Width="460" Height="300" CornerRadius="32" InteractiveMaxScaleDip="40" BlurRadius="18" Vibrancy="1.4" Brightness="0.06" TintColor="#36D1DC" HighlightEnabled="True" ShadowEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <StackPanel Margin="32" VerticalAlignment="Center">
-            <TextBlock Text="Press &amp; drag me" FontSize="26" FontWeight="SemiBold" Foreground="White"/>
-            <TextBlock Text="AcrylicInteractiveSurface adds press / drag deformation and an interactive highlight." FontSize="14" Foreground="#ECFFFFFF" Margin="0,10,0,0" TextWrapping="Wrap"/>
-          </StackPanel>
-        </acrylic:AcrylicInteractiveSurface>
+        <Canvas x:Name="InteractiveCanvas">
+          <acrylic:AcrylicInteractiveSurface x:Name="InteractiveCard" Canvas.Left="360" Canvas.Top="170" Width="460" Height="300" CornerRadius="32" InteractiveMaxScaleDip="40" DeformOnRightButton="True" BlurRadius="18" Vibrancy="1.4" Brightness="0.06" TintColor="#36D1DC" HighlightEnabled="True" ShadowEnabled="True">
+            <StackPanel Margin="32" VerticalAlignment="Center">
+              <TextBlock Text="Drag me" FontSize="26" FontWeight="SemiBold" Foreground="White"/>
+              <TextBlock Text="Left-drag to move it · Right-drag to deform (squish &amp; spring)." FontSize="14" Foreground="#ECFFFFFF" Margin="0,10,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+          </acrylic:AcrylicInteractiveSurface>
+        </Canvas>
       </Panel>
     </TabItem>
 

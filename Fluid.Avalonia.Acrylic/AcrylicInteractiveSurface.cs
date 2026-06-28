@@ -24,6 +24,11 @@ namespace Fluid.Avalonia.Acrylic
         public static readonly StyledProperty<double> InteractiveMaxScaleDipProperty =
             AvaloniaProperty.Register<AcrylicInteractiveSurface, double>(nameof(InteractiveMaxScaleDip), 4.0);
 
+        // When true the press/drag deformation responds to the RIGHT mouse button instead of
+        // the left, freeing the left button for other gestures (e.g. dragging the surface).
+        public static readonly StyledProperty<bool> DeformOnRightButtonProperty =
+            AvaloniaProperty.Register<AcrylicInteractiveSurface, bool>(nameof(DeformOnRightButton), false);
+
         static AcrylicInteractiveSurface()
         {
             AffectsRender<AcrylicInteractiveSurface>(
@@ -98,6 +103,12 @@ namespace Fluid.Avalonia.Acrylic
             set => SetValue(InteractiveMaxScaleDipProperty, value);
         }
 
+        public bool DeformOnRightButton
+        {
+            get => GetValue(DeformOnRightButtonProperty);
+            set => SetValue(DeformOnRightButtonProperty, value);
+        }
+
         // The glass is drawn via a custom render with no Background, so the control is
         // otherwise invisible to hit-testing (Background="Transparent" doesn't help a
         // custom-rendered control). Claim the whole bounds so press/drag is received
@@ -117,7 +128,8 @@ namespace Fluid.Avalonia.Acrylic
             if (!IsInteractive)
                 return;
 
-            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            PointerPointProperties props = e.GetCurrentPoint(this).Properties;
+            if (!(DeformOnRightButton ? props.IsRightButtonPressed : props.IsLeftButtonPressed))
                 return;
 
             if (_activePointerId is not null)

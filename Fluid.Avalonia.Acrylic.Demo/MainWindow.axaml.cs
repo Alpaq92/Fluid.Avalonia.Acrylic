@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -32,6 +33,46 @@ public partial class MainWindow : Window
         ShadowCheck.PropertyChanged += (_, e) =>
         {
             if (e.Property == ToggleButton.IsCheckedProperty) PlayCard.ShadowEnabled = ShadowCheck.IsChecked ?? true;
+        };
+
+        WireInteractiveDrag();
+    }
+
+    // Interactive tab: left-drag moves the card around the canvas; right-drag deforms it
+    // (AcrylicInteractiveSurface handles the right-button deformation itself).
+    private void WireInteractiveDrag()
+    {
+        var card = InteractiveCard;
+        var canvas = InteractiveCanvas;
+        bool moving = false;
+        Point start = default;
+        double startLeft = 0, startTop = 0;
+
+        card.PointerPressed += (_, e) =>
+        {
+            if (!e.GetCurrentPoint(card).Properties.IsLeftButtonPressed)
+                return;
+            moving = true;
+            start = e.GetPosition(canvas);
+            startLeft = Canvas.GetLeft(card);
+            startTop = Canvas.GetTop(card);
+            e.Pointer.Capture(card);
+            e.Handled = true;
+        };
+        card.PointerMoved += (_, e) =>
+        {
+            if (!moving)
+                return;
+            var pos = e.GetPosition(canvas);
+            Canvas.SetLeft(card, startLeft + (pos.X - start.X));
+            Canvas.SetTop(card, startTop + (pos.Y - start.Y));
+        };
+        card.PointerReleased += (_, e) =>
+        {
+            if (!moving)
+                return;
+            moving = false;
+            e.Pointer.Capture(null);
         };
     }
 
