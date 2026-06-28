@@ -16,7 +16,7 @@ It references the sibling `Fluid.Avalonia.Acrylic` library project, so it runs w
 
 - **Gallery** — three frosted cards (blue / grape / teal) over a vibrant backdrop.
 - **Playground** — one card plus live sliders (blur, vibrancy, brightness), highlight/shadow toggles, and tint swatches.
-- **Interactive** — `AcrylicInteractiveSurface` with press/drag deformation.
+- **Interactive** — `AcrylicInteractiveSurface`: **left-drag** moves the card, **right-drag** deforms it (squish & spring, via `DeformOnRightButton`).
 - **In an app** — frosted sidebar + content panel in a realistic layout.
 
 ## Headless render

@@ -50,7 +50,7 @@ xmlns:acrylic="using:Fluid.Avalonia.Acrylic"
 ```
 
 - **`AcrylicSurface`** — a `ContentControl` that draws the glass pipeline behind its child and clips to `CornerRadius`. Key properties: `BlurRadius`, `Vibrancy`, `Brightness`, `TintColor`, `RefractionHeight` / `RefractionAmount`, `HighlightEnabled`, `ShadowEnabled`.
-- **`AcrylicInteractiveSurface`** — adds press/drag deformation and an interactive highlight.
+- **`AcrylicInteractiveSurface`** — adds press/drag deformation and an interactive highlight. Set `DeformOnRightButton` to arm the deformation with the right mouse button, leaving the left button free for your own gestures (e.g. dragging the surface).
 
 For best performance, opt into the tuned compositor/Skia defaults at startup:
 
