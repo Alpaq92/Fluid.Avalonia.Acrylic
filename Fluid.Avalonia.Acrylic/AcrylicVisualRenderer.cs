@@ -15,9 +15,14 @@ namespace Fluid.Avalonia.Acrylic
             if (clipRect.Width <= 0 || clipRect.Height <= 0)
                 return;
 
+            // Clip in bitmap space BEFORE pushing the translation. If the clip is pushed
+            // after the translate it lands in translated space, offset by -clipRect.Position,
+            // which crops the captured backdrop to a sub-rectangle — leaving the rest of the
+            // snapshot transparent (a flat "gray rectangle" once a colour filter is applied
+            // at low blur, where no blur margin hides it).
             Rect targetClip = new(clipRect.Size);
-            using (context.PushTransform(Matrix.CreateTranslation(-clipRect.Position.X, -clipRect.Position.Y)))
             using (context.PushClip(targetClip))
+            using (context.PushTransform(Matrix.CreateTranslation(-clipRect.Position.X, -clipRect.Position.Y)))
             {
                 Render(context, visual, new Rect(visual.Bounds.Size), Matrix.Identity, clipRect, excludedRoots);
             }
