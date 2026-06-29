@@ -651,6 +651,12 @@ namespace Fluid.Avalonia.Acrylic
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
             StopAdaptiveLuminanceTimer();
+
+            // Eagerly drop this surface from the backdrop provider so the shared per-window state
+            // (RenderTargetBitmap + snapshot + the SceneInvalidated handler + renderer ref) is torn
+            // down when the last surface leaves — otherwise it leaks until the TopLevel is GC'd.
+            AcrylicBackdropProvider.Unsubscribe(e.RootVisual as TopLevel, this);
+
             base.OnDetachedFromVisualTree(e);
         }
 

@@ -121,6 +121,14 @@ namespace Fluid.Avalonia.Acrylic
             UnhookTopLevel();
             _activePointerId = null;
             _animationTimer.Stop();
+
+            // Reset the interaction springs and clear the deform transform. Without this, a surface
+            // detached mid-press (tab switch, ItemsControl recycle, virtualization) keeps its pressed
+            // spring state, so on re-attach it renders permanently scaled/translated — the timer is
+            // stopped and nothing restarts it until the next press.
+            _pressProgress.SnapTo(0.0);
+            _position.SnapTo(_startPosition);
+            RenderTransform = null;
         }
 
         private void OnSelfPointerPressed(object? sender, PointerPressedEventArgs e)

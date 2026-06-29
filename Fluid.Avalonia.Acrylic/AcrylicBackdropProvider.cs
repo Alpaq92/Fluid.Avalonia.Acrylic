@@ -47,7 +47,12 @@ namespace Fluid.Avalonia.Acrylic
         private static readonly ConditionalWeakTable<TopLevel, BackdropState> s_states = new();
         private static int s_captureDepth;
         private static PropertyInfo? s_topLevelRendererProperty;
-        private static PropertyInfo? s_dirtyRectProperty;
+
+        // Per-args-type cache for the reflected SceneInvalidatedEventArgs.DirtyRect. A ConcurrentDictionary
+        // because the SceneInvalidated handler body runs on the render thread and multiple windows can
+        // invalidate concurrently — the old single mutable field was a read-modify-write race that could
+        // thrash or read a PropertyInfo for the wrong args type and throw on the render thread.
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, PropertyInfo?> s_dirtyRectProperties = new();
 
         public static bool IsCapturing
         {
@@ -84,6 +89,30 @@ namespace Fluid.Avalonia.Acrylic
 
             if (shouldCapture)
                 QueueCapture(topLevel, state);
+        }
+
+        public static void Unsubscribe(TopLevel? topLevel, Control control)
+        {
+            if (topLevel is null || !s_states.TryGetValue(topLevel, out BackdropState? state))
+                return;
+
+            for (int i = state.Subscribers.Count - 1; i >= 0; i--)
+            {
+                if (!state.Subscribers[i].TryGetTarget(out Control? existing) || ReferenceEquals(existing, control))
+                    state.Subscribers.RemoveAt(i);
+            }
+
+            // Last surface gone from this TopLevel: tear down eagerly instead of waiting for a future
+            // capture / scene-invalidation that may never fire after the window closes — otherwise the
+            // RenderTargetBitmap, the snapshot (native/GPU image) + its filtered cache, the
+            // SceneInvalidated handler, and the strong renderer reference leak until the TopLevel is GC'd.
+            if (state.Subscribers.Count == 0)
+            {
+                DetachRendererSubscription(state);
+                DisposeAllSnapshots(state);
+                state.ScratchBitmap?.Dispose();
+                state.ScratchBitmap = null;
+            }
         }
 
         public static void NotifySubscriberOnlyInvalidation(Control control)
@@ -557,17 +586,13 @@ namespace Fluid.Avalonia.Acrylic
             if (args is null)
                 return false;
 
-            if (s_dirtyRectProperty is null || s_dirtyRectProperty.DeclaringType != args.GetType())
-            {
-                s_dirtyRectProperty = args.GetType().GetProperty(
-                    "DirtyRect",
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            }
+            PropertyInfo? prop = s_dirtyRectProperties.GetOrAdd(args.GetType(), static type =>
+                type.GetProperty("DirtyRect", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
 
-            if (s_dirtyRectProperty?.PropertyType != typeof(Rect))
+            if (prop?.PropertyType != typeof(Rect))
                 return false;
 
-            if (s_dirtyRectProperty.GetValue(args) is not Rect value)
+            if (prop.GetValue(args) is not Rect value)
                 return false;
 
             dirtyRect = value;
