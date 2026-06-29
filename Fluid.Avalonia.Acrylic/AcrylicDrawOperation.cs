@@ -394,6 +394,13 @@ namespace Fluid.Avalonia.Acrylic
                 ? snapshot.OriginInPixels
                 : new PixelPoint(snapshot.OriginInPixels.X + cropRect.Left, snapshot.OriginInPixels.Y + cropRect.Top);
 
+            // Build the filter chain. Every SKColorFilter and (intermediate) SKImageFilter is tracked
+            // in filterChain and disposed together in the finally — AFTER the DrawImage that uses them.
+            // The previous code chained `filter = SKImageFilter.Create...(.., filter)` and disposed only
+            // the outermost via `using (filter)`, leaking every wrapped intermediate SKImageFilter on
+            // each cache-miss (e.g. per frame during a slider drag), and disposed the SKColorFilters
+            // before the DrawImage that consumes them.
+            System.Collections.Generic.List<System.IDisposable> filterChain = new();
             SKImageFilter? filter = null;
 
             bool needsColorControls =
@@ -403,20 +410,26 @@ namespace Fluid.Avalonia.Acrylic
 
             if (needsColorControls)
             {
-                using SKColorFilter? colorFilter = SKColorFilter.CreateColorMatrix(CreateColorControlsColorMatrix(brightness, contrast, saturation));
+                SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(CreateColorControlsColorMatrix(brightness, contrast, saturation));
+                filterChain.Add(colorFilter);
                 filter = SKImageFilter.CreateColorFilter(colorFilter, filter);
+                filterChain.Add(filter);
             }
 
             if (Math.Abs(exposureEv) > 0.0005f)
             {
-                using SKColorFilter? colorFilter = SKColorFilter.CreateColorMatrix(CreateExposureColorMatrix(exposureEv));
+                SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(CreateExposureColorMatrix(exposureEv));
+                filterChain.Add(colorFilter);
                 filter = SKImageFilter.CreateColorFilter(colorFilter, filter);
+                filterChain.Add(filter);
             }
 
             if (Math.Abs(opacity - 1.0f) > 0.0005f)
             {
-                using SKColorFilter? colorFilter = SKColorFilter.CreateColorMatrix(CreateOpacityColorMatrix(opacity));
+                SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(CreateOpacityColorMatrix(opacity));
+                filterChain.Add(colorFilter);
                 filter = SKImageFilter.CreateColorFilter(colorFilter, filter);
+                filterChain.Add(filter);
             }
 
             if (blurSigmaPx > 0.0005f)
@@ -425,13 +438,14 @@ namespace Fluid.Avalonia.Acrylic
                 // which shows up as darkened borders when the snapshot is clipped by the window bounds.
                 SKRect filterCropRect = new(0, 0, filterSource.Width, filterSource.Height);
                 filter = SKImageFilter.CreateBlur(blurSigmaPx, blurSigmaPx, SKShaderTileMode.Clamp, filter, filterCropRect);
+                filterChain.Add(filter);
             }
 
-            if (filter is null)
-                return null;
-
-            using (filter)
+            try
             {
+                if (filter is null)
+                    return null;
+
                 // ApplyImageFilter() can return a varying offset/subset for blur radii, which can cause the
                 // sampled backdrop to appear to "drift" while dragging the blur slider. Instead, render the
                 // filtered snapshot into an explicit same-size surface at (0,0) so the origin remains stable.
@@ -457,6 +471,12 @@ namespace Fluid.Avalonia.Acrylic
 
                 SKImage? filteredImage = surface.Snapshot();
                 return new AcrylicBackdropSnapshot.FilteredResult(filteredImage, filteredOrigin);
+            }
+            finally
+            {
+                // Dispose every color/image filter built above (outermost first).
+                for (int i = filterChain.Count - 1; i >= 0; i--)
+                    filterChain[i].Dispose();
             }
         }
 

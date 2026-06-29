@@ -100,19 +100,27 @@ namespace Fluid.Avalonia.Acrylic
             return context.PushClip(rect);
         }
 
+        // Cache the per-type reflection lookup: TryGetClipToBoundsRadius runs for every ClipToBounds
+        // visual on every backdrop capture, so an uncached GetProperty/GetProperties here is reflection
+        // in the hot path. ConcurrentDictionary also makes the cache safe to populate from render threads.
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<Type, PropertyInfo?> s_clipRadiusProperties = new();
+
         private static bool TryGetClipToBoundsRadius(Visual visual, out CornerRadius radius)
         {
             radius = default;
 
-            Type type = visual.GetType();
-            PropertyInfo? prop = type.GetProperty("ClipToBoundsRadius", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-
-            if (prop is null)
+            PropertyInfo? prop = s_clipRadiusProperties.GetOrAdd(visual.GetType(), static type =>
             {
-                prop = type
-                    .GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)
-                    .FirstOrDefault(p => p.Name.EndsWith(".ClipToBoundsRadius", StringComparison.Ordinal));
-            }
+                PropertyInfo? p = type.GetProperty("ClipToBoundsRadius", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (p is null)
+                {
+                    p = type
+                        .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        .FirstOrDefault(pi => pi.Name.EndsWith(".ClipToBoundsRadius", StringComparison.Ordinal));
+                }
+
+                return p;
+            });
 
             if (prop?.PropertyType != typeof(CornerRadius))
                 return false;
