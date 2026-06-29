@@ -26,7 +26,9 @@
 
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="\" />
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <!-- Pack the trimmed nuget-readme.md (no badges/screenshots) as the package README;
+         the repo README.md keeps the badges + screenshots for GitHub. -->
+    <None Include="..\nuget-readme.md" Pack="true" PackagePath="\README.md" />
     <None Include="..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
