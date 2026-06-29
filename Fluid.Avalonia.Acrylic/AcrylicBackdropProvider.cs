@@ -56,7 +56,9 @@ namespace Fluid.Avalonia.Acrylic
 
         public static bool IsCapturing
         {
-            get => s_captureDepth > 0;
+            // Read with a barrier: the SceneInvalidated handler body runs on the render thread while
+            // Capture mutates this on the UI thread.
+            get => System.Threading.Volatile.Read(ref s_captureDepth) > 0;
         }
 
         public static AcrylicBackdropSnapshot? TryGetSnapshot(Control control)
@@ -173,6 +175,15 @@ namespace Fluid.Avalonia.Acrylic
             topLevel.RequestAnimationFrame(_ =>
             {
                 state.CaptureQueued = false;
+
+                // The window may have closed / hidden, or the state been replaced, between queuing this
+                // and the frame firing. Skip a doomed full-window render (and a possible throw on a
+                // torn-down renderer) — mirrors the guards the SceneInvalidated handler already has.
+                if (!topLevel.IsVisible
+                    || !s_states.TryGetValue(topLevel, out BackdropState? current)
+                    || !ReferenceEquals(current, state))
+                    return;
+
                 Capture(topLevel, state);
             });
         }
@@ -210,7 +221,7 @@ namespace Fluid.Avalonia.Acrylic
             state.LastClipRect = clip.DipRect;
             state.HasLastClipRect = true;
 
-            s_captureDepth++;
+            System.Threading.Interlocked.Increment(ref s_captureDepth);
             try
             {
                 Vector dpi = new(96 * scaling, 96 * scaling);
@@ -264,7 +275,7 @@ namespace Fluid.Avalonia.Acrylic
             }
             finally
             {
-                s_captureDepth--;
+                System.Threading.Interlocked.Decrement(ref s_captureDepth);
             }
 
             InvalidateSubscribers(state);
@@ -752,8 +763,8 @@ namespace Fluid.Avalonia.Acrylic
             const ulong fnvPrime = 1099511628211UL;
 
             ulong hash = fnvOffset;
-            const int samplesX = 8;
-            const int samplesY = 8;
+            const int samplesX = 16;
+            const int samplesY = 16;
             int maxX = Math.Max(1, width) - 1;
             int maxY = Math.Max(1, height) - 1;
             int rowBytes = width * bytesPerPixel;
@@ -800,8 +811,8 @@ namespace Fluid.Avalonia.Acrylic
             const ulong fnvPrime = 1099511628211UL;
 
             ulong hash = fnvOffset;
-            const int samplesX = 8;
-            const int samplesY = 8;
+            const int samplesX = 16;
+            const int samplesY = 16;
             int maxX = Math.Max(1, width) - 1;
             int maxY = Math.Max(1, height) - 1;
 

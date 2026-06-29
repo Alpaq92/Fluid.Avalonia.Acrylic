@@ -192,6 +192,7 @@ namespace Fluid.Avalonia.Acrylic
         internal AcrylicFrontOverlay? FrontOverlay { get; private set; }
 
         private DispatcherTimer? _adaptiveLuminanceTimer;
+        private bool _hasAdaptiveLuminanceSample;
         private EventHandler? _adaptiveLuminanceTickHandler;
         private double _adaptiveLuminance;
 
@@ -720,8 +721,20 @@ namespace Fluid.Avalonia.Acrylic
             if (!TrySampleBackdropLuminance(out double sampled))
                 return;
 
-            double smoothing = Clamp(AdaptiveLuminanceSmoothing, 0.0, 1.0);
-            double next = AdaptiveLuminance + (sampled - AdaptiveLuminance) * smoothing;
+            double next;
+            if (!_hasAdaptiveLuminanceSample)
+            {
+                // First sample: snap so adaptive luminance starts at the real backdrop value rather
+                // than the initial 0 — otherwise AdaptiveLuminanceSmoothing == 0 freezes it at 0 forever.
+                next = sampled;
+                _hasAdaptiveLuminanceSample = true;
+            }
+            else
+            {
+                double smoothing = Clamp(AdaptiveLuminanceSmoothing, 0.0, 1.0);
+                next = AdaptiveLuminance + (sampled - AdaptiveLuminance) * smoothing;
+            }
+
             if (Math.Abs(next - AdaptiveLuminance) > 0.0005)
             {
                 AdaptiveLuminance = next;
