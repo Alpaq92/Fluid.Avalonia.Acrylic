@@ -6,7 +6,7 @@
 
     <!-- NuGet package -->
     <PackageId>Fluid.Avalonia.Acrylic</PackageId>
-    <Description>Cross-platform, software-rendered acrylic / frosted-glass backdrop for AvaloniaUI — a SkiaSharp SKRuntimeEffect shader pipeline (vibrancy, blur, rounded-rect lens, tint, highlight). Renders entirely via Avalonia's Skia backend, so it works on Windows, macOS, Linux and the browser with no OS backdrop support required. Companion to Fluid.Avalonia; a renamed fork of the MIT-licensed LiquidGlassAvaloniaUI by KaranocaVe.</Description>
+    <Description>A cross-platform, software-rendered acrylic / frosted-glass backdrop for Avalonia — one SkiaSharp shader, every platform. An SKRuntimeEffect pipeline (vibrancy, blur, rounded-rect lens, tint, highlight) that renders through Avalonia's Skia backend, so it works on Windows, macOS, Linux and the browser (WebAssembly) with no OS backdrop support (Mica / vibrancy / KWin blur) required. A dependency-free companion to Fluid.Avalonia; a renamed fork of the MIT-licensed LiquidGlassAvaloniaUI by KaranocaVe.</Description>
     <Authors>Alpaq92</Authors>
     <PackageProjectUrl>https://github.com/Alpaq92/Fluid.Avalonia.Acrylic</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Alpaq92/Fluid.Avalonia.Acrylic.git</RepositoryUrl>
