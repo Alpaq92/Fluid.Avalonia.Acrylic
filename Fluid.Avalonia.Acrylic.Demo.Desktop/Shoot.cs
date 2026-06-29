@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 
 namespace AcrylicDemo;
 
@@ -25,17 +27,16 @@ internal static class Shoot
         var window = new MainWindow { Width = 1180, Height = 760 };
         window.Show();
 
-        var tabs = window.FindControl<TabControl>("Tabs")!;
+        // MainWindow hosts MainView (a separate XAML name scope), so reach the
+        // TabControl through the visual tree rather than by name.
+        Pump();
+        var tabs = window.GetVisualDescendants().OfType<TabControl>().First();
         string[] names = { "gallery", "playground", "interactive", "in-app" };
 
         for (int i = 0; i < tabs.ItemCount; i++)
         {
             tabs.SelectedIndex = i;
-            for (int t = 0; t < 20; t++)
-            {
-                Dispatcher.UIThread.RunJobs();
-                AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-            }
+            Pump();
 
             var frame = window.CaptureRenderedFrame();
             var path = Path.Combine(outDir, $"tab-{i}-{names[i]}.png");
@@ -45,5 +46,14 @@ internal static class Shoot
 
         window.Close();
         Console.WriteLine("shots -> " + outDir);
+    }
+
+    private static void Pump()
+    {
+        for (int t = 0; t < 20; t++)
+        {
+            Dispatcher.UIThread.RunJobs();
+            AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        }
     }
 }

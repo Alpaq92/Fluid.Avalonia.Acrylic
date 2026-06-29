@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Desktop head: the Windows/macOS/Linux entry point. Hosts the shared
+       Fluid.Avalonia.Acrylic.Demo library's App in a classic desktop lifetime. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>AcrylicDemo</RootNamespace>
+    <!-- Per-monitor DPI awareness for crisp screenshots (Windows only; skipped on
+         Linux CI where the Win32 manifest isn't relevant). -->
+    <ApplicationManifest Condition="'$(OS)' == 'Windows_NT'">..\Fluid.Avalonia.Acrylic.Demo\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fluid.Avalonia.Acrylic.Demo\Fluid.Avalonia.Acrylic.Demo.csproj" />
+  </ItemGroup>
+
+</Project>

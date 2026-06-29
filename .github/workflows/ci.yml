@@ -21,6 +21,9 @@ jobs:
             8.0.x
             10.0.x
 
+      - name: Install WASM tools
+        run: dotnet workload install wasm-tools
+
       - name: Cache NuGet packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -28,11 +31,10 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props') }}
           restore-keys: ${{ runner.os }}-nuget-
 
+      # Builds the whole solution: the library, the shared demo, and the Desktop + Browser
+      # (WebAssembly) heads. wasm-tools is required to compile the net10.0-browser head.
       - name: Restore
-        run: dotnet restore Fluid.Avalonia.Acrylic/Fluid.Avalonia.Acrylic.csproj
+        run: dotnet restore Fluid.Avalonia.Acrylic.slnx
 
-      - name: Build (library)
-        run: dotnet build Fluid.Avalonia.Acrylic/Fluid.Avalonia.Acrylic.csproj --configuration Release --no-restore
-
-      - name: Build (demo)
-        run: dotnet build Fluid.Avalonia.Acrylic.Demo/Fluid.Avalonia.Acrylic.Demo.csproj --configuration Release
+      - name: Build
+        run: dotnet build Fluid.Avalonia.Acrylic.slnx --configuration Release --no-restore

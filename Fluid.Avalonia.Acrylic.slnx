@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="Fluid.Avalonia.Acrylic/Fluid.Avalonia.Acrylic.csproj" />
   <Project Path="Fluid.Avalonia.Acrylic.Demo/Fluid.Avalonia.Acrylic.Demo.csproj" />
+  <Project Path="Fluid.Avalonia.Acrylic.Demo.Desktop/Fluid.Avalonia.Acrylic.Demo.Desktop.csproj" />
+  <Project Path="Fluid.Avalonia.Acrylic.Demo.Browser/Fluid.Avalonia.Acrylic.Demo.Browser.csproj" />
 </Solution>

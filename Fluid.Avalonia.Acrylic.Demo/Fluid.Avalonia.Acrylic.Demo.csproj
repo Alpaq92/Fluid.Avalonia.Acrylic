@@ -1,29 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Shared demo library (App, MainWindow, MainView, content). The Desktop and Browser
+       heads reference it. The assembly name stays "Fluid.Avalonia.Acrylic.Demo" so the
+       avares:// icon URI resolves. References Avalonia core only (no platform backend) so
+       the Browser head doesn't drag Avalonia.Desktop into the WASM build. -->
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <RootNamespace>AcrylicDemo</RootNamespace>
-    <!-- Per-monitor DPI awareness for crisp screenshots (Windows only; skipped on
-         Linux CI where the Win32 manifest isn't relevant). -->
-    <ApplicationManifest Condition="'$(OS)' == 'Windows_NT'">app.manifest</ApplicationManifest>
+    <AssemblyName>Fluid.Avalonia.Acrylic.Demo</AssemblyName>
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- The package's Grape 9 icon, embedded as the window/taskbar icon. -->
+    <!-- The package's Grape 9 icon, embedded as the desktop window/taskbar icon. -->
     <AvaloniaResource Include="..\icon.png" Link="icon.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Avalonia, Avalonia.Skia and the platform backends come transitively via Avalonia.Desktop. -->
-    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 
   <ItemGroup>

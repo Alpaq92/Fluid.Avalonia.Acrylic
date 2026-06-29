@@ -3,11 +3,18 @@
 A cross-platform, software-rendered **acrylic / frosted-glass backdrop** for [AvaloniaUI](https://avaloniaui.net).
 
 [![NuGet](https://img.shields.io/nuget/v/Fluid.Avalonia.Acrylic.svg)](https://www.nuget.org/packages/Fluid.Avalonia.Acrylic)
+[![Live demo](https://img.shields.io/badge/demo-live-success)](https://alpaq92.github.io/Fluid.Avalonia.Acrylic/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/blob/main/LICENSE)
 
 One shader, every platform.
 
 Companion package to **[Fluid.Avalonia](https://github.com/Alpaq92/Fluid.Avalonia)** — though it has no dependency on it and works in any Avalonia app.
+
+## Live demo
+
+Try it right in your browser — the demo runs on Avalonia's **WebAssembly** head, deployed to **GitHub Pages**:
+
+> **Live demo →** **<https://alpaq92.github.io/Fluid.Avalonia.Acrylic/>**
 
 ## Screenshots
 

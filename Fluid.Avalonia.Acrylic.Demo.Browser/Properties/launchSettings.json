@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Fluid.Avalonia.Acrylic.Demo.Browser": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5080",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "http://localhost:5080"
+      }
+    }
+  }
+}
