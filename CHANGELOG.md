@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.0.0...v1.0.1) (2026-06-29)
+
+
+### Bug Fixes
+
+* resource leaks, detach state, and reflection-cache races (code review) ([#8](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/issues/8)) ([a01e51f](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/commit/a01e51fb947516883f2ccc19aebc7679e4a28a18))
+
 ## 1.0.0 (2026-06-29)
 
 
