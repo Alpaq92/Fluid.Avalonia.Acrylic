@@ -2,7 +2,10 @@
 
 A cross-platform, software-rendered **acrylic / frosted-glass backdrop** for [AvaloniaUI](https://avaloniaui.net).
 
-[![NuGet](https://img.shields.io/nuget/v/Fluid.Avalonia.Acrylic.svg)](https://www.nuget.org/packages/Fluid.Avalonia.Acrylic)
+[![NuGet](https://img.shields.io/nuget/v/Fluid.Avalonia.Acrylic.svg?label=NuGet&color=blue)](https://www.nuget.org/packages/Fluid.Avalonia.Acrylic)
+[![Downloads](https://img.shields.io/nuget/dt/Fluid.Avalonia.Acrylic.svg?label=Downloads&color=blue)](https://www.nuget.org/packages/Fluid.Avalonia.Acrylic)
+[![CI](https://img.shields.io/github/actions/workflow/status/Alpaq92/Fluid.Avalonia.Acrylic/ci.yml?branch=main&label=CI)](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/actions/workflow/status/Alpaq92/Fluid.Avalonia.Acrylic/release.yml?branch=main&label=Release)](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/actions/workflows/release.yml)
 [![Live demo](https://img.shields.io/badge/demo-live-success)](https://alpaq92.github.io/Fluid.Avalonia.Acrylic/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/blob/main/LICENSE)
 
