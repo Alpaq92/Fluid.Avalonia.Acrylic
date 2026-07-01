@@ -79,6 +79,9 @@ namespace Fluid.Avalonia.Acrylic
                 case AcrylicDrawPass.Highlight:
                     RenderHighlight(canvas);
                     break;
+                case AcrylicDrawPass.Reveal:
+                    RenderReveal(canvas);
+                    break;
             }
         }
 
@@ -753,6 +756,80 @@ namespace Fluid.Avalonia.Acrylic
             using SKPath path = CreateRoundRectPath(rect, cornerRadii);
 
             // Pad the highlight layer to avoid edge artifacts when transformed and/or rasterized into an intermediate surface.
+            const float safePad = 1.0f;
+
+            canvas.Save();
+            canvas.Translate(-safePad, -safePad);
+            SKRect layerBounds = SKRect.Create(0, 0, size.Width + safePad * 2.0f, size.Height + safePad * 2.0f);
+            canvas.SaveLayer(layerBounds, null);
+
+            canvas.Translate(safePad, safePad);
+            canvas.ClipPath(path, SKClipOperation.Intersect, true);
+            canvas.DrawPath(path, paint);
+
+            canvas.Restore();
+            canvas.Restore();
+        }
+
+        private void RenderReveal(SKCanvas canvas)
+        {
+            // Reuses the interactive-highlight shader (radial falloff from a screen-space
+            // position) but stroked around the border like RenderHighlight, instead of filled
+            // across the body like RenderInteractiveHighlight — this is what reads as a
+            // pointer-tracked "edge glow" rather than a full-surface wash.
+            if (s_interactiveHighlightEffect is null)
+                return;
+
+            float progress = (float)Clamp(_parameters.RevealProgress, 0.0, 1.0);
+            if (progress <= 0.001f || _parameters.RevealWidth <= 0.001)
+                return;
+
+            SKSize size = new((float)_bounds.Width, (float)_bounds.Height);
+            if (size.Width <= 0 || size.Height <= 0)
+                return;
+
+            float maxRadius = Math.Min(size.Width, size.Height) * 0.5f;
+            float[] cornerRadii = GetCornerRadii(_parameters.CornerRadius, maxRadius);
+
+            using SKRuntimeEffectUniforms uniforms = new(s_interactiveHighlightEffect);
+            uniforms["size"] = new[]
+            {
+                size.Width, size.Height
+            };
+
+            Color color = _parameters.RevealColor;
+            uniforms["color"] = new[]
+            {
+                color.R / 255f, color.G / 255f, color.B / 255f, (color.A / 255f) * progress
+            };
+            uniforms["radius"] = (float)Math.Max(1.0, _parameters.RevealRadius);
+            uniforms["position"] = new[]
+            {
+                (float)_parameters.RevealPosition.X, (float)_parameters.RevealPosition.Y
+            };
+
+            using SKRuntimeEffectChildren children = new(s_interactiveHighlightEffect);
+            using SKShader? shader = s_interactiveHighlightEffect.ToShader(uniforms, children);
+            if (shader is null)
+                return;
+
+            float strokeWidth = (float)(Math.Ceiling(Clamp(_parameters.RevealWidth, 0.0, 100.0)) * 2.0);
+
+            using SKPaint paint = new()
+            {
+                Shader = shader,
+                IsAntialias = true,
+                BlendMode = SKBlendMode.Plus,
+                Style = SKPaintStyle.Stroke,
+                StrokeJoin = SKStrokeJoin.Round,
+                StrokeCap = SKStrokeCap.Round,
+                StrokeWidth = Math.Max(0.5f, strokeWidth)
+            };
+
+            SKRect rect = SKRect.Create(0, 0, size.Width, size.Height);
+            using SKPath path = CreateRoundRectPath(rect, cornerRadii);
+
+            // Pad the reveal layer to avoid edge artifacts when transformed and/or rasterized into an intermediate surface.
             const float safePad = 1.0f;
 
             canvas.Save();

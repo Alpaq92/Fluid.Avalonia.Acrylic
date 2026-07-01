@@ -48,6 +48,9 @@ namespace Fluid.Avalonia.Acrylic
 
             if (surface.InnerShadowEnabled && parameters.InnerShadowOpacity > 0.001 && parameters.InnerShadowColor.A > 0)
                 context.Custom(new AcrylicInnerShadowDrawOperation(bounds, parameters));
+
+            if (surface.RevealBorderEnabled && parameters.RevealProgress > 0.001)
+                context.Custom(new AcrylicDrawOperation(bounds, parameters, null, AcrylicDrawPass.Reveal));
         }
     }
 }

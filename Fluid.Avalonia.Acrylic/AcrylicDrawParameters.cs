@@ -7,7 +7,8 @@ namespace Fluid.Avalonia.Acrylic
     {
         Lens,
         InteractiveHighlight,
-        Highlight
+        Highlight,
+        Reveal
     }
 
     internal struct AcrylicDrawParameters
@@ -48,6 +49,12 @@ namespace Fluid.Avalonia.Acrylic
 
         public double InteractiveProgress { get; set; }
         public Point InteractivePosition { get; set; }
+
+        public double RevealProgress { get; set; }
+        public Point RevealPosition { get; set; }
+        public double RevealRadius { get; set; }
+        public double RevealWidth { get; set; }
+        public Color RevealColor { get; set; }
 
         public bool ShadowEnabled { get; set; }
         public double ShadowRadius { get; set; }
