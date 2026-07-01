@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.0.2...v1.1.0) (2026-07-01)
+
+
+### Features
+
+* pointer-tracked Reveal, Parallax surface, Radix-based demo palette, and new docs ([#12](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/issues/12)) ([acd59e9](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/commit/acd59e9dd293a73c435c1735d14f0bbe1dc9ca64))
+
 ## [1.0.2](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.0.1...v1.0.2) (2026-06-29)
 
 
