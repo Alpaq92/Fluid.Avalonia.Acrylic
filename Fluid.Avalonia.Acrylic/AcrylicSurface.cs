@@ -133,6 +133,34 @@ namespace Fluid.Avalonia.Acrylic
         public static readonly StyledProperty<double> ShadowOpacityProperty =
             AvaloniaProperty.Register<AcrylicSurface, double>(nameof(ShadowOpacity), 1.0);
 
+        /// <summary>
+        /// Enables a pointer-tracked edge-glow highlight (a "Reveal" effect) shared across
+        /// every reveal-enabled surface under the same <see cref="TopLevel"/> via a single
+        /// pointer subscription. Also glows on proximity — see <see cref="RevealProximityDistance"/>.
+        /// </summary>
+        public static readonly StyledProperty<bool> RevealBorderEnabledProperty =
+            AvaloniaProperty.Register<AcrylicSurface, bool>(nameof(RevealBorderEnabled), false);
+
+        public static readonly StyledProperty<double> RevealBorderWidthProperty =
+            AvaloniaProperty.Register<AcrylicSurface, double>(nameof(RevealBorderWidth), 2.0);
+
+        public static readonly StyledProperty<double> RevealBorderRadiusProperty =
+            AvaloniaProperty.Register<AcrylicSurface, double>(nameof(RevealBorderRadius), 180.0);
+
+        public static readonly StyledProperty<Color> RevealBorderColorProperty =
+            AvaloniaProperty.Register<AcrylicSurface, Color>(nameof(RevealBorderColor), Colors.White);
+
+        public static readonly StyledProperty<double> RevealBorderIntensityProperty =
+            AvaloniaProperty.Register<AcrylicSurface, double>(nameof(RevealBorderIntensity), 0.6);
+
+        /// <summary>
+        /// Distance (DIPs) beyond the surface bounds at which the reveal glow starts fading in
+        /// as the pointer approaches, before it is actually over the surface. 0 disables proximity
+        /// (the glow only appears once the pointer is inside the bounds).
+        /// </summary>
+        public static readonly StyledProperty<double> RevealProximityDistanceProperty =
+            AvaloniaProperty.Register<AcrylicSurface, double>(nameof(RevealProximityDistance), 64.0);
+
         public static readonly StyledProperty<bool> InnerShadowEnabledProperty =
             AvaloniaProperty.Register<AcrylicSurface, bool>(nameof(InnerShadowEnabled), false);
 
@@ -464,6 +492,66 @@ namespace Fluid.Avalonia.Acrylic
             set => SetValue(InnerShadowOpacityProperty, value);
         }
 
+        public bool RevealBorderEnabled
+        {
+            get => GetValue(RevealBorderEnabledProperty);
+            set => SetValue(RevealBorderEnabledProperty, value);
+        }
+
+        public double RevealBorderWidth
+        {
+            get => GetValue(RevealBorderWidthProperty);
+            set => SetValue(RevealBorderWidthProperty, value);
+        }
+
+        public double RevealBorderRadius
+        {
+            get => GetValue(RevealBorderRadiusProperty);
+            set => SetValue(RevealBorderRadiusProperty, value);
+        }
+
+        public Color RevealBorderColor
+        {
+            get => GetValue(RevealBorderColorProperty);
+            set => SetValue(RevealBorderColorProperty, value);
+        }
+
+        public double RevealBorderIntensity
+        {
+            get => GetValue(RevealBorderIntensityProperty);
+            set => SetValue(RevealBorderIntensityProperty, value);
+        }
+
+        public double RevealProximityDistance
+        {
+            get => GetValue(RevealProximityDistanceProperty);
+            set => SetValue(RevealProximityDistanceProperty, value);
+        }
+
+        private Point _revealPosition;
+        private double _revealIntensity;
+
+        /// <summary>
+        /// Called by <see cref="AcrylicRevealBroadcaster"/> with the pointer position in this
+        /// surface's local coordinates and a 0..1 proximity intensity (1 = pointer inside the
+        /// bounds, fading to 0 at <see cref="RevealProximityDistance"/> away).
+        /// </summary>
+        internal void SetRevealPointer(Point localPosition, double proximityIntensity)
+        {
+            proximityIntensity = Clamp(proximityIntensity, 0.0, 1.0);
+
+            if (_revealPosition == localPosition && Math.Abs(_revealIntensity - proximityIntensity) < 0.0005)
+                return;
+
+            _revealPosition = localPosition;
+            _revealIntensity = proximityIntensity;
+            FrontOverlay?.InvalidateVisual();
+        }
+
+        internal Point GetRevealPosition() => _revealPosition;
+
+        internal double GetRevealIntensity() => RevealBorderEnabled ? _revealIntensity : 0.0;
+
         public override void Render(DrawingContext context)
         {
             if (AcrylicBackdropProvider.IsCapturing)
@@ -524,7 +612,12 @@ namespace Fluid.Avalonia.Acrylic
                 InnerShadowRadius = InnerShadowRadius,
                 InnerShadowOffset = InnerShadowOffset,
                 InnerShadowColor = InnerShadowColor,
-                InnerShadowOpacity = InnerShadowOpacity
+                InnerShadowOpacity = InnerShadowOpacity,
+                RevealProgress = GetRevealIntensity() * Clamp(RevealBorderIntensity, 0.0, 1.0),
+                RevealPosition = GetRevealPosition(),
+                RevealRadius = RevealBorderRadius,
+                RevealWidth = RevealBorderWidth,
+                RevealColor = RevealBorderColor
             };
 
             if (AdaptiveLuminanceEnabled)
@@ -586,8 +679,19 @@ namespace Fluid.Avalonia.Acrylic
                 || change.Property == InnerShadowRadiusProperty
                 || change.Property == InnerShadowOffsetProperty
                 || change.Property == InnerShadowColorProperty
-                || change.Property == InnerShadowOpacityProperty)
+                || change.Property == InnerShadowOpacityProperty
+                || change.Property == RevealBorderWidthProperty
+                || change.Property == RevealBorderRadiusProperty
+                || change.Property == RevealBorderColorProperty
+                || change.Property == RevealBorderIntensityProperty)
             {
+                FrontOverlay?.InvalidateVisual();
+                return;
+            }
+
+            if (change.Property == RevealBorderEnabledProperty)
+            {
+                UpdateRevealRegistration();
                 FrontOverlay?.InvalidateVisual();
                 return;
             }
@@ -647,6 +751,7 @@ namespace Fluid.Avalonia.Acrylic
         {
             base.OnAttachedToVisualTree(e);
             UpdateAdaptiveLuminanceTimer();
+            UpdateRevealRegistration();
         }
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -657,8 +762,22 @@ namespace Fluid.Avalonia.Acrylic
             // (RenderTargetBitmap + snapshot + the SceneInvalidated handler + renderer ref) is torn
             // down when the last surface leaves — otherwise it leaks until the TopLevel is GC'd.
             AcrylicBackdropProvider.Unsubscribe(e.RootVisual as TopLevel, this);
+            AcrylicRevealBroadcaster.Unregister(e.RootVisual as TopLevel, this);
+            _revealPosition = default;
+            _revealIntensity = 0.0;
 
             base.OnDetachedFromVisualTree(e);
+        }
+
+        private void UpdateRevealRegistration()
+        {
+            if (!this.IsAttachedToVisualTree())
+                return;
+
+            if (RevealBorderEnabled)
+                AcrylicRevealBroadcaster.Register(this);
+            else
+                AcrylicRevealBroadcaster.Unregister(TopLevel.GetTopLevel(this), this);
         }
 
         private void UpdateAdaptiveLuminanceTimer()

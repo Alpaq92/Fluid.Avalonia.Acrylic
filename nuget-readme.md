@@ -32,7 +32,9 @@ For best performance, opt into the tuned defaults at startup:
 AppBuilder.Configure<App>().UseAcrylicPerformanceDefaults();
 ```
 
-A live browser demo, screenshots and full documentation are on the [project page](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic).
+A live browser demo, screenshots, full documentation and a
+[comparison vs. native window blur and DaisyGlass](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic#how-this-compares)
+are on the [project page](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic).
 
 ## License
 
