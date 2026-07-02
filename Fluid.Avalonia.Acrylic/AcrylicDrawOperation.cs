@@ -206,7 +206,7 @@ namespace Fluid.Avalonia.Acrylic
                     // solid-color backdrop shapes as odd, pointed-looking arcs once magnified —
                     // a partial reduction still reads as "clearly less blurry" without that.
                     AcrylicDrawParameters sharpParameters = _parameters;
-                    sharpParameters.BlurRadius = _parameters.BlurRadius * 0.4;
+                    sharpParameters.BlurRadius = _parameters.BlurRadius * Clamp(_parameters.LensSharpness, 0.0, 1.0);
                     AcrylicBackdropSnapshot.FilteredResult sharpFiltered = GetOrCreateFilteredBackdrop(
                         _backdropSnapshot, sharpParameters, grContext, currentTransform, size);
 
@@ -245,6 +245,8 @@ namespace Fluid.Avalonia.Acrylic
                     };
                     lensUniforms["lensRadius"] = lensRadius;
                     lensUniforms["lensZoom"] = (float)Clamp(_parameters.LensZoom, 1.0, 10.0);
+                    lensUniforms["lensDarken"] = (float)Clamp(_parameters.LensDarken, 0.0, 1.0);
+                    lensUniforms["lensRing"] = (float)Clamp(_parameters.LensRingIntensity, 0.0, 1.0);
 
                     using SKRuntimeEffectChildren lensChildren = new(s_lensEffect);
                     lensChildren["content"] = lensInput;

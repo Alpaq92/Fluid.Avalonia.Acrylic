@@ -13,6 +13,8 @@ uniform float chromaticAberration;   // 0..1
 uniform float2 lensCenter;           // Local-space center of a small hover lens (DIP)
 uniform float lensRadius;            // 0 disables the hover lens; > 0 replaces edge refraction below
 uniform float lensZoom;              // Magnification factor inside the lens circle (1 = no zoom)
+uniform float lensDarken;            // 0..1, how much the lens body dims at its center
+uniform float lensRing;              // 0..1, brightness of the thin rim at the lens boundary
 
 float radiusAt(float2 centeredCoord, float4 radii) {
     if (centeredCoord.x >= 0.0) {
@@ -111,11 +113,11 @@ half4 main(float2 coord) {
         // at the center and easing toward the edge, then add a thin bright ring right at the
         // boundary (a real lens/loupe catches the light at its rim).
         float t = dist / lensRadius;
-        float darken = 1.0 - 0.34 * (1.0 - t);
+        float darken = 1.0 - lensDarken * (1.0 - t);
         half3 tinted = lensResult.rgb * darken;
 
         float ring = smoothstep(0.84, 0.94, t) * (1.0 - smoothstep(0.94, 1.0, t));
-        tinted = mix(tinted, half3(1.0), ring * 0.4);
+        tinted = mix(tinted, half3(1.0), ring * lensRing);
 
         return half4(tinted, lensResult.a);
     }

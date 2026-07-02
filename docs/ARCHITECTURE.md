@@ -79,8 +79,10 @@ Two things make this cheaper than "recapture and re-filter every frame":
   pointer's offset from center (`IsParallaxEnabled`, `ParallaxStrength`). No new sampling
   infrastructure — it drives an existing property.
 - **`AcrylicLensSurface : AcrylicSurface`** — shows a small circular magnifying-glass zoom
-  (`LensRadius`, `LensZoom`, `IsLensEnabled`) centered on the pointer while hovering. A plain
-  zoom, not a refraction/bend effect; reaches the base class only through the narrow
+  (`LensRadius`, `LensZoom`, `IsLensEnabled`, plus `LensDarken`/`LensRingIntensity` for how
+  visibly the lens disc dims and rims itself, and `LensSharpness` for how much less blurred the
+  backdrop under it is) centered on the pointer while hovering. A plain zoom, not a
+  refraction/bend effect; reaches the base class only through the narrow
   `ApplyHoverLens` hook, the same shape `AcrylicParallaxSurface` uses for `BackdropOffset`.
 - **`AcrylicBackdrop`** — one attached property, `IsExcludedFromCapture`, to keep a subtree
   (e.g. debug overlays) out of the backdrop snapshot.
