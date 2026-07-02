@@ -2,6 +2,7 @@
 // Adapted to Avalonia + SkiaSharp (SKRuntimeEffect).
 
 uniform shader content;
+uniform shader sharpContent;         // Same backdrop, filtered with BlurRadius forced to 0
 
 uniform float2 size;                 // Control size (DIP in Avalonia coordinates)
 uniform float4 cornerRadii;          // [topLeft, topRight, bottomRight, bottomLeft]
@@ -9,6 +10,9 @@ uniform float refractionHeight;      // Edge band thickness (DIP)
 uniform float refractionAmount;      // Refraction strength (DIP)
 uniform float depthEffect;           // 0..1
 uniform float chromaticAberration;   // 0..1
+uniform float2 lensCenter;           // Local-space center of a small hover lens (DIP)
+uniform float lensRadius;            // 0 disables the hover lens; > 0 replaces edge refraction below
+uniform float lensZoom;              // Magnification factor inside the lens circle (1 = no zoom)
 
 float radiusAt(float2 centeredCoord, float4 radii) {
     if (centeredCoord.x >= 0.0) {
@@ -81,6 +85,41 @@ half4 sampleDispersed(float2 refractedCoord, float2 dispersedCoord) {
 }
 
 half4 main(float2 coord) {
+    // Small hover lens: a plain magnifying-glass zoom in a circle centered on the pointer,
+    // independent of the card's edges. Takes over entirely when active (lensRadius > 0) instead
+    // of layering on top of the edge-band refraction below. Deliberately NOT a refraction/bend
+    // effect — two earlier attempts (max displacement at the pointer itself, then a ring-shaped
+    // bump falloff) both read as visually "weird" liquid warping. A uniform zoom is what an
+    // actual magnifying glass does: a smaller source region stretched to fill the circle, with a
+    // plain circular edge where it meets the untouched backdrop — no bending in between.
+    if (lensRadius > 0.001) {
+        float2 toCenter = coord - lensCenter;
+        float dist = length(toCenter);
+
+        if (dist >= lensRadius) {
+            return content.eval(coord);
+        }
+
+        float zoom = max(lensZoom, 1.0);
+        float2 magnifiedCoord = lensCenter + toCenter / zoom;
+        // Sample the unblurred backdrop under the lens instead of the (blurred) one everywhere
+        // else on the card — the lens reveals crisp detail, not just a bigger blurry patch.
+        half4 lensResult = sharpContent.eval(magnifiedCoord);
+
+        // A same-brightness zoom barely reads as a "shape" against a busy backdrop — the
+        // reference is a visibly dimmed glass disc with a bright rim. Darken the body, strongest
+        // at the center and easing toward the edge, then add a thin bright ring right at the
+        // boundary (a real lens/loupe catches the light at its rim).
+        float t = dist / lensRadius;
+        float darken = 1.0 - 0.34 * (1.0 - t);
+        half3 tinted = lensResult.rgb * darken;
+
+        float ring = smoothstep(0.84, 0.94, t) * (1.0 - smoothstep(0.94, 1.0, t));
+        tinted = mix(tinted, half3(1.0), ring * 0.4);
+
+        return half4(tinted, lensResult.a);
+    }
+
     float2 halfSize = size * 0.5;
     float2 centeredCoord = coord - halfSize;
     float radius = radiusAt(centeredCoord, cornerRadii);

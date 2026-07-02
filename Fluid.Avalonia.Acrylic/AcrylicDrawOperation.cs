@@ -167,6 +167,8 @@ namespace Fluid.Avalonia.Acrylic
             SKShader? lensInput = (SKShader)backdropShader;
 
             SKShader? backdropTransformShader = null;
+            SKShader? sharpBackdropShaderOwned = null;
+            SKShader? sharpBackdropTransformShaderOwned = null;
             try
             {
                 double zoomValue = _parameters.BackdropZoom;
@@ -180,30 +182,48 @@ namespace Fluid.Avalonia.Acrylic
                     || Math.Abs(offset.X) > 0.0005
                     || Math.Abs(offset.Y) > 0.0005;
 
-                if (needsTransform && s_backdropTransformEffect is not null)
+                if (needsTransform)
                 {
-                    using SKRuntimeEffectUniforms uniforms = new(s_backdropTransformEffect);
-                    uniforms["size"] = new[]
-                    {
-                        size.Width, size.Height
-                    };
-                    uniforms["zoom"] = zoom;
-                    uniforms["offset"] = new[]
-                    {
-                        (float)offset.X, (float)offset.Y
-                    };
-
-                    using SKRuntimeEffectChildren children = new(s_backdropTransformEffect);
-                    children["content"] = lensInput;
-
-                    backdropTransformShader = s_backdropTransformEffect.ToShader(uniforms, children);
+                    backdropTransformShader = BuildBackdropTransformShader(lensInput, size, zoom, offset);
                     if (backdropTransformShader is not null)
                         lensInput = backdropTransformShader;
                 }
 
                 float refractionHeight = (float)Clamp(_parameters.RefractionHeight, 0.0, Math.Min(size.Width, size.Height) * 0.5);
                 float refractionAmount = (float)_parameters.RefractionAmount;
-                bool applyLens = refractionHeight > 0.001f && Math.Abs(refractionAmount) > 0.001f;
+                float lensRadius = (float)Clamp(_parameters.LensRadius, 0.0, Math.Max(size.Width, size.Height));
+                bool applyLens = (refractionHeight > 0.001f && Math.Abs(refractionAmount) > 0.001f) || lensRadius > 0.001f;
+
+                // The hover lens reveals detail rather than just magnifying blur: sample a
+                // separately filtered backdrop with BlurRadius forced to 0 inside the lens circle,
+                // while the rest of the card keeps using the normal (blurred) one. Only built when
+                // a lens is actually active — every other surface (edge-refraction only) skips
+                // this and keeps the previous single-backdrop cost.
+                SKShader? sharpLensInput = null;
+                if (lensRadius > 0.001f)
+                {
+                    // A full 0 here combined with a strong zoom exposed razor-sharp edges of
+                    // solid-color backdrop shapes as odd, pointed-looking arcs once magnified —
+                    // a partial reduction still reads as "clearly less blurry" without that.
+                    AcrylicDrawParameters sharpParameters = _parameters;
+                    sharpParameters.BlurRadius = _parameters.BlurRadius * 0.4;
+                    AcrylicBackdropSnapshot.FilteredResult sharpFiltered = GetOrCreateFilteredBackdrop(
+                        _backdropSnapshot, sharpParameters, grContext, currentTransform, size);
+
+                    sharpBackdropShaderOwned = SKShader.CreateImage(
+                        sharpFiltered.Image,
+                        SKShaderTileMode.Clamp,
+                        SKShaderTileMode.Clamp,
+                        WithPixelOrigin(currentInvertedTransform, sharpFiltered.OriginInPixels));
+                    sharpLensInput = sharpBackdropShaderOwned;
+
+                    if (needsTransform)
+                    {
+                        sharpBackdropTransformShaderOwned = BuildBackdropTransformShader(sharpLensInput, size, zoom, offset);
+                        if (sharpBackdropTransformShaderOwned is not null)
+                            sharpLensInput = sharpBackdropTransformShaderOwned;
+                    }
+                }
 
                 SKShader? lensShader = null;
                 if (applyLens)
@@ -219,9 +239,20 @@ namespace Fluid.Avalonia.Acrylic
                     lensUniforms["refractionAmount"] = -refractionAmount;
                     lensUniforms["depthEffect"] = _parameters.DepthEffect ? 1.0f : 0.0f;
                     lensUniforms["chromaticAberration"] = _parameters.ChromaticAberration ? 1.0f : 0.0f;
+                    lensUniforms["lensCenter"] = new[]
+                    {
+                        (float)_parameters.LensPosition.X, (float)_parameters.LensPosition.Y
+                    };
+                    lensUniforms["lensRadius"] = lensRadius;
+                    lensUniforms["lensZoom"] = (float)Clamp(_parameters.LensZoom, 1.0, 10.0);
 
                     using SKRuntimeEffectChildren lensChildren = new(s_lensEffect);
                     lensChildren["content"] = lensInput;
+                    // sharpContent is only actually sampled inside the shader's lens branch, but
+                    // the uniform still needs a valid binding whenever the lens shader runs at
+                    // all (i.e. also for plain edge-refraction surfaces) — fall back to the
+                    // normal content in that case.
+                    lensChildren["sharpContent"] = sharpLensInput ?? lensInput;
 
                     lensShader = s_lensEffect.ToShader(lensUniforms, lensChildren);
                 }
@@ -305,8 +336,36 @@ namespace Fluid.Avalonia.Acrylic
             finally
             {
                 backdropTransformShader?.Dispose();
+                sharpBackdropTransformShaderOwned?.Dispose();
+                sharpBackdropShaderOwned?.Dispose();
             }
 
+        }
+
+        // Shared by the normal and "sharp" (lens) backdrop chains in RenderLens — both need the
+        // same BackdropZoom/BackdropOffset transform applied to whichever filtered image they
+        // start from. Returns null (input unchanged) when s_backdropTransformEffect failed to
+        // load; the caller falls back to the untransformed input in that case.
+        private static SKShader? BuildBackdropTransformShader(SKShader input, SKSize size, float zoom, Vector offset)
+        {
+            if (s_backdropTransformEffect is null)
+                return null;
+
+            using SKRuntimeEffectUniforms uniforms = new(s_backdropTransformEffect);
+            uniforms["size"] = new[]
+            {
+                size.Width, size.Height
+            };
+            uniforms["zoom"] = zoom;
+            uniforms["offset"] = new[]
+            {
+                (float)offset.X, (float)offset.Y
+            };
+
+            using SKRuntimeEffectChildren children = new(s_backdropTransformEffect);
+            children["content"] = input;
+
+            return s_backdropTransformEffect.ToShader(uniforms, children);
         }
 
         private static AcrylicBackdropSnapshot.FilteredResult GetOrCreateFilteredBackdrop(
