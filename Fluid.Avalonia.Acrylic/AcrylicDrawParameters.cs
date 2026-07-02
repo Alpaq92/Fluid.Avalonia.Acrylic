@@ -26,6 +26,9 @@ namespace Fluid.Avalonia.Acrylic
         public Point LensPosition { get; set; }
         public double LensRadius { get; set; }
         public double LensZoom { get; set; }
+        public double LensDarken { get; set; }
+        public double LensRingIntensity { get; set; }
+        public double LensSharpness { get; set; }
 
         public double BlurRadius { get; set; }
         public double Vibrancy { get; set; }

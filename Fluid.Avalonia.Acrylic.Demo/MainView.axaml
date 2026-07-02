@@ -160,9 +160,11 @@
                   <TextBlock Text="Thin, subtle white border glow (the defaults) via the shared broadcaster." FontSize="13" Foreground="#ECFFFFFF" Margin="0,8,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
               </acrylic:AcrylicSurface>
-              <!-- See AcrylicLensSurface.cs / AcrylicShader.sksl for why this is a plain zoom
-                   rather than a refraction effect, and why content stays untouched. -->
-              <acrylic:AcrylicLensSurface x:Name="LoupeCard" Width="260" Height="220" CornerRadius="24" BlurRadius="14" Vibrancy="1.4" Brightness="0.06" TintColor="#4CCCE6" RefractionHeight="0" LensRadius="46" LensZoom="2.3" HighlightEnabled="True" ShadowEnabled="True">
+              <!-- Picked from a 5-way side-by-side comparison: a small, strongly-zoomed, mostly-
+                   sharp lens reads as the most "crisp magnifier" of the set. See AcrylicLensSurface.cs
+                   / AcrylicShader.sksl for why this is a plain zoom rather than a refraction effect,
+                   and why content stays untouched. -->
+              <acrylic:AcrylicLensSurface x:Name="LoupeCard" Width="260" Height="220" CornerRadius="24" BlurRadius="14" Vibrancy="1.4" Brightness="0.06" TintColor="#4CCCE6" RefractionHeight="0" LensRadius="36" LensZoom="2.8" LensDarken="0.20" LensRingIntensity="0.30" LensSharpness="0.15" HighlightEnabled="True" ShadowEnabled="True">
                 <StackPanel Margin="24" VerticalAlignment="Center">
                   <TextBlock Text="Loupe" FontSize="20" FontWeight="SemiBold" Foreground="White"/>
                   <TextBlock Text="No border glow — hover to see a small magnifying lens follow the cursor. Like Parallax, the content is never touched." FontSize="13" Foreground="#ECFFFFFF" Margin="0,8,0,0" TextWrapping="Wrap"/>
