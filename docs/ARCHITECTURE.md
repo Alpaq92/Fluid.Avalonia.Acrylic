@@ -20,12 +20,14 @@ core glass pipeline (backdrop capture, the draw operation, shadow/highlight over
 utils, diagnostics) is still inherited from that fork, but on top of it the library now carries
 an Avalonia-12 compatibility pass, a code-review hardening pass (resource leaks, detach-state
 resets, reflection-cache races, capture liveness/thread safety), and — with no upstream
-equivalent at all — `AcrylicRevealBroadcaster` and `AcrylicParallaxSurface`.
+equivalent at all — `AcrylicRevealBroadcaster`, `AcrylicParallaxSurface`, and
+`AcrylicLensSurface`.
 
-Neither Reveal nor Parallax was ported from anywhere; both were built natively against the
-existing draw pipeline. The idea for each is conceptually modeled on FluentWPF's
-`PointerTracker`/Reveal effect and `ParallaxView` respectively — WPF concepts, not portable
-code. Benchmarking against **[DaisyGlass](https://github.com/tobitege/Flowery.NET)**, the
+None of Reveal, Parallax, or the Lens hover-magnifier was ported from anywhere; all three were
+built natively against the existing draw pipeline. Reveal and Parallax are conceptually modeled
+on FluentWPF's `PointerTracker`/Reveal effect and `ParallaxView` respectively — WPF concepts,
+not portable code; the Lens magnifier has no such analogue, it's just what a real magnifying
+glass does. Benchmarking against **[DaisyGlass](https://github.com/tobitege/Flowery.NET)**, the
 closest real Avalonia peer, is what motivated building them as differentiators in the first
 place: DaisyGlass has no pointer interaction of any kind (confirmed by reading its source — no
 `PointerPressed`/`PointerMoved` handling anywhere, no hover or reveal styling), so a
@@ -43,7 +45,7 @@ flowchart TD
     E -->|"Lens pass"| F["AcrylicDrawOperation"]
     F --> G["color matrix (brightness/contrast/vibrancy/exposure)"]
     G --> H["SKImageFilter blur"]
-    H --> I["AcrylicShader.sksl — lens refraction + chromatic aberration"]
+    H --> I["AcrylicShader.sksl — edge refraction + chromatic aberration,\nor a hover-magnifier zoom (mutually exclusive)"]
     I --> J["AcrylicProgressiveMask.sksl / AcrylicGamma.sksl (optional)"]
     J --> K["clip to CornerRadius, draw"]
     E -->|"Highlight / InteractiveHighlight / Reveal passes"| L["AcrylicOverlays\n(InteractiveOverlay, FrontOverlay)"]
@@ -76,6 +78,10 @@ Two things make this cheaper than "recapture and re-filter every frame":
 - **`AcrylicParallaxSurface : AcrylicSurface`** — shifts `BackdropOffset` by a fraction of the
   pointer's offset from center (`IsParallaxEnabled`, `ParallaxStrength`). No new sampling
   infrastructure — it drives an existing property.
+- **`AcrylicLensSurface : AcrylicSurface`** — shows a small circular magnifying-glass zoom
+  (`LensRadius`, `LensZoom`, `IsLensEnabled`) centered on the pointer while hovering. A plain
+  zoom, not a refraction/bend effect; reaches the base class only through the narrow
+  `ApplyHoverLens` hook, the same shape `AcrylicParallaxSurface` uses for `BackdropOffset`.
 - **`AcrylicBackdrop`** — one attached property, `IsExcludedFromCapture`, to keep a subtree
   (e.g. debug overlays) out of the backdrop snapshot.
 - **`AcrylicAppBuilderExtensions.UseAcrylicPerformanceDefaults()`** — opinionated
@@ -86,7 +92,7 @@ Two things make this cheaper than "recapture and re-filter every frame":
 
 | Area | Files | Role |
 |---|---|---|
-| Core surfaces | `AcrylicSurface`, `AcrylicInteractiveSurface`, `AcrylicParallaxSurface` | Public controls; own the styled properties and per-frame `AcrylicDrawParameters` assembly |
+| Core surfaces | `AcrylicSurface`, `AcrylicInteractiveSurface`, `AcrylicParallaxSurface`, `AcrylicLensSurface` | Public controls; own the styled properties and per-frame `AcrylicDrawParameters` assembly |
 | Backdrop capture | `AcrylicBackdropProvider`, `AcrylicBackdropSnapshot`, `AcrylicVisualRenderer`, `AcrylicBackdrop` | Per-`TopLevel` capture state, the snapshot + filtered-result cache, the manual visual-tree walk used to render the capture, and the capture-exclusion attached property |
 | Draw operations & shaders | `AcrylicDrawOperation`, `AcrylicDrawParameters`, `AcrylicShadowDrawOperations`, `AcrylicPathUtils`, `Assets/Shaders/*.sksl` | The `ICustomDrawOperation` implementations and the six `SKRuntimeEffect` shaders (lens, highlight, interactive highlight, progressive mask, gamma, backdrop transform) |
 | Overlays | `AcrylicOverlays` | Template parts (`InteractiveOverlay`, `FrontOverlay`) that trigger the highlight/shadow/reveal draw passes after content renders |

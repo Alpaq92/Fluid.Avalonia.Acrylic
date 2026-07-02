@@ -96,7 +96,7 @@ interactive.
 
 ## Credits
 
-This started as a renamed, repacked fork of **[LiquidGlassAvaloniaUI](https://github.com/KaranocaVe/LiquidGlassAvaloniaUI)** by **KaranocaVe** (MIT) with confirmed support for Avalonia 12 — the name was changed to "Acrylic" as a more platform-neutral term. It's no longer a simple fork: the core glass pipeline (including `AcrylicInteractiveSurface`'s press/drag deformation) is still inherited, but `RevealBorderEnabled`'s pointer-tracked glow and `AcrylicParallaxSurface` were built natively with no upstream equivalent — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#code-provenance) for the detail. All credit for the inherited pipeline belongs to the upstream project; see [LICENSE](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/blob/main/LICENSE) for the preserved copyright.
+This started as a renamed, repacked fork of **[LiquidGlassAvaloniaUI](https://github.com/KaranocaVe/LiquidGlassAvaloniaUI)** by **KaranocaVe** (MIT) with confirmed support for Avalonia 12 — the name was changed to "Acrylic" as a more platform-neutral term. It's no longer a simple fork: the core glass pipeline (including `AcrylicInteractiveSurface`'s press/drag deformation) is still inherited, but `RevealBorderEnabled`'s pointer-tracked glow, `AcrylicParallaxSurface`, and `AcrylicLensSurface` were built natively with no upstream equivalent — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#code-provenance) for the detail. All credit for the inherited pipeline belongs to the upstream project; see [LICENSE](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/blob/main/LICENSE) for the preserved copyright.
 
 ## License
 

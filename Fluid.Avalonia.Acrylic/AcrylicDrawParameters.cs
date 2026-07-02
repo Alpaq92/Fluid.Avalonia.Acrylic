@@ -23,6 +23,10 @@ namespace Fluid.Avalonia.Acrylic
         public bool DepthEffect { get; set; }
         public bool ChromaticAberration { get; set; }
 
+        public Point LensPosition { get; set; }
+        public double LensRadius { get; set; }
+        public double LensZoom { get; set; }
+
         public double BlurRadius { get; set; }
         public double Vibrancy { get; set; }
         public double Brightness { get; set; }

@@ -552,6 +552,16 @@ namespace Fluid.Avalonia.Acrylic
 
         internal double GetRevealIntensity() => RevealBorderEnabled ? _revealIntensity : 0.0;
 
+        /// <summary>
+        /// Lets a subclass (see <see cref="AcrylicLensSurface"/>) contribute its own pointer-
+        /// driven Lens-pass-only state into the draw parameters, without every AcrylicSurface
+        /// instance carrying fields it'll never use — mirrors how AcrylicParallaxSurface drives
+        /// the existing BackdropOffset property instead of adding base-class state of its own.
+        /// </summary>
+        internal virtual void ApplyHoverLens(ref AcrylicDrawParameters parameters)
+        {
+        }
+
         public override void Render(DrawingContext context)
         {
             if (AcrylicBackdropProvider.IsCapturing)
@@ -644,6 +654,8 @@ namespace Fluid.Avalonia.Acrylic
                         ? Lerp(8.0, 16.0, l)
                         : Lerp(8.0, 2.0, -l);
             }
+
+            ApplyHoverLens(ref parameters);
 
             return parameters;
         }
