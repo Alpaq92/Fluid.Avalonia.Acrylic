@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.1.0...v1.2.0) (2026-07-02)
+
+
+### Features
+
+* add AcrylicLensSurface hover-magnifier and polish the Reveal & Parallax demo ([#14](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/issues/14)) ([02dc2cf](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/commit/02dc2cf2473e7f44dd65c4e7c09867ab11572c29))
+
 ## [1.1.0](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.0.2...v1.1.0) (2026-07-01)
 
 
