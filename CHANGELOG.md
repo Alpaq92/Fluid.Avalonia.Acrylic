@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.2.0...v1.3.0) (2026-07-02)
+
+
+### Features
+
+* make Loupe's darken/rim/sharpness tunable, pick a final variant ([#16](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/issues/16)) ([1ed3a35](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/commit/1ed3a35065afc10e5756d59f2f041fa160c3f891))
+
 ## [1.2.0](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.1.0...v1.2.0) (2026-07-02)
 
 
