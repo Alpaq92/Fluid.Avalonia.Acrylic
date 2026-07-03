@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.3.0...v1.3.1) (2026-07-03)
+
+
+### Bug Fixes
+
+* **demo:** scale each tab's content to fit the actual viewport ([#18](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/issues/18)) ([8921f0f](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/commit/8921f0f900e6ae1c0189ca09eff2500b94c70915))
+
 ## [1.3.0](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.2.0...v1.3.0) (2026-07-02)
 
 
