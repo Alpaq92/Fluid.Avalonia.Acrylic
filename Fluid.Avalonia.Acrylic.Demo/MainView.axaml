@@ -8,7 +8,17 @@
 
     <!-- ===================== GALLERY ===================== -->
     <TabItem Header="Gallery">
-      <Panel>
+      <!-- Every tab's content is a fixed-size reference layout (this one 1100x600) scaled to fit
+           whatever space is actually available, via Viewbox Stretch="Uniform". Without this, the
+           demo only looked right at the one window size it happened to be built/tested at — on a
+           narrower viewport (a phone, or just a resized window) cards got clipped, and decorative
+           "confetti" ellipses positioned by absolute pixel Margin (tuned for that one size) drifted
+           away from the cards they're meant to sit behind instead of scaling with them. Wrapping the
+           whole composition keeps every element's position relative to every other element fixed,
+           regardless of the actual viewport — nothing can misalign because nothing moves
+           independently. -->
+      <Viewbox Stretch="Uniform">
+      <Panel Width="1100" Height="600">
         <Panel>
           <Panel.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -42,11 +52,13 @@
           </acrylic:AcrylicSurface>
         </StackPanel>
       </Panel>
+      </Viewbox>
     </TabItem>
 
     <!-- ===================== PLAYGROUND ===================== -->
     <TabItem Header="Playground">
-      <Grid ColumnDefinitions="*,320">
+      <Viewbox Stretch="Uniform">
+      <Grid Width="1100" Height="600" ColumnDefinitions="*,320">
         <Panel Grid.Column="0">
           <Panel>
             <Panel.Background>
@@ -86,11 +98,13 @@
           </StackPanel>
         </Border>
       </Grid>
+      </Viewbox>
     </TabItem>
 
     <!-- ===================== INTERACTIVE ===================== -->
     <TabItem Header="Interactive">
-      <Panel>
+      <Viewbox Stretch="Uniform">
+      <Panel Width="1100" Height="600">
         <Panel>
           <Panel.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -102,7 +116,7 @@
           <Ellipse Width="260" Height="260" Fill="#8C4CCCE6" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="120,80,0,0"/>
           <Ellipse Width="320" Height="320" Fill="#805472E4" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,80,40"/>
         </Panel>
-        <Canvas x:Name="InteractiveCanvas">
+        <Canvas x:Name="InteractiveCanvas" Width="1100" Height="600">
           <acrylic:AcrylicInteractiveSurface x:Name="InteractiveCard" Canvas.Left="360" Canvas.Top="170" Width="460" Height="300" CornerRadius="32" InteractiveMaxScaleDip="40" DeformOnRightButton="True" BlurRadius="18" Vibrancy="1.4" Brightness="0.06" TintColor="#4CCCE6" HighlightEnabled="True" ShadowEnabled="True">
             <StackPanel Margin="32" VerticalAlignment="Center">
               <TextBlock Text="Drag me" FontSize="26" FontWeight="SemiBold" Foreground="White"/>
@@ -111,11 +125,13 @@
           </acrylic:AcrylicInteractiveSurface>
         </Canvas>
       </Panel>
+      </Viewbox>
     </TabItem>
 
     <!-- ===================== REVEAL & PARALLAX ===================== -->
     <TabItem Header="Reveal &amp; Parallax">
-      <Panel>
+      <Viewbox Stretch="Uniform">
+      <Panel Width="1100" Height="600">
         <Panel>
           <Panel.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -180,11 +196,13 @@
           </acrylic:AcrylicParallaxSurface>
         </StackPanel>
       </Panel>
+      </Viewbox>
     </TabItem>
 
     <!-- ===================== IN AN APP ===================== -->
     <TabItem Header="In an app">
-      <Panel>
+      <Viewbox Stretch="Uniform">
+      <Panel Width="1100" Height="600">
         <Panel>
           <Panel.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -217,6 +235,7 @@
           </acrylic:AcrylicSurface>
         </Grid>
       </Panel>
+      </Viewbox>
     </TabItem>
 
   </TabControl>
