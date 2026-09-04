@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.3.1...v1.4.0) (2026-09-04)
+
+
+### Bug Fixes
+
+* **deps:** bump Avalonia to 12.1.2 ([#25](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/issues/25)) ([c8d6f22](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/commit/c8d6f2211b3e89c9381ee57ab0ccc62f9c5fee62))
+* **deps:** Bump the nuget-minor-and-patch group with 1 update ([#23](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/issues/23)) ([df1caa9](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/commit/df1caa98b997085f8658bd28be5410a12cabd43a))
+
 ## [1.3.1](https://github.com/Alpaq92/Fluid.Avalonia.Acrylic/compare/v1.3.0...v1.3.1) (2026-07-03)
 
 
