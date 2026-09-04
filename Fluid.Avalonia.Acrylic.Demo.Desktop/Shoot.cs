@@ -4,6 +4,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 
@@ -40,7 +41,7 @@ internal static class Shoot
 
             var frame = window.CaptureRenderedFrame();
             var path = Path.Combine(outDir, $"tab-{i}-{names[i]}.png");
-            frame?.Save(path);
+            frame?.Save(path, PngBitmapEncoderOptions.Default);
             Console.WriteLine($"shot {path} ({(frame is null ? "NULL" : frame.PixelSize.ToString())})");
         }
 
